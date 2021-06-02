@@ -1,27 +1,30 @@
-import React from 'react'
 import GoogleMapReact from 'google-map-react';
-import LocationPin from './components/LocationPin'
-import './map.css'
+import React from 'react';
+import { useSelector } from 'react-redux';
+import LocationPin from './components/LocationPin';
 
-const Map = ({ data, defaultCenter, zoomLevel }) => {
+const CocoMap = ({ zoomLevel }) => {
 
-    
+    const data = useSelector(state => state);
+    const selectedRobot = data.robots[data.selectedRobot];
+
     return (
-    <div style={{ width: '100%', height: '60vh' }}>
-        <GoogleMapReact
-            bootstrapURLKeys={{ key: process.env.REACT_APP_MAP_KEY }}
-            defaultCenter={{lng: defaultCenter.longitude, lat: defaultCenter.latitude}}
-            defaultZoom={zoomLevel}
-        >
-            {Object.keys(data?.robots).map(key => <LocationPin
-                lat={data.robots[key].location.latitude}
-                lng={data.robots[key].location.longitude}
-                text={key}
-            />)}
+        <div style={{ width: '100%', height: '60vh' }}>
+            <GoogleMapReact key={data.selectedRobot}
+                bootstrapURLKeys={{ key: process.env.REACT_APP_MAP_KEY }}
+                defaultCenter={{ lng: selectedRobot?.location?.longitude, lat: selectedRobot?.location?.latitude }}
+                defaultZoom={zoomLevel}
+            >
+                {Object.keys(data?.robots).map(key => <LocationPin
+                    lat={data.robots[key].location.latitude}
+                    lng={data.robots[key].location.longitude}
+                    text={key}
+                    robotData={data?.robots[key]}
+                    orderData={data?.orders[data?.robots[key]?.assignedOrderId]}
+                />)}
+            </GoogleMapReact>
+        </div>
+    )
+}
 
-
-        </GoogleMapReact>
-    </div>
-)}
-
-export default Map
+export default CocoMap
